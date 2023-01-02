@@ -1,5 +1,5 @@
 export const IS_DEV = process.env.NEXT_PUBLIC_ENVIRONMENT === "development";
-export const MOCK_REQUESTS_ENABLED = !IS_DEV ? false : true;
+export const MOCK_REQUESTS_ENABLED = !IS_DEV ? false : false;
 export const ENABLE_MOCK_CONTENT = !IS_DEV ? false : true;
 
 export const FIREBASE_CONFIG = {

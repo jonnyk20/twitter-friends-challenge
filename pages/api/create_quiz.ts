@@ -164,11 +164,21 @@ const getTweetsString = (mutualsTweets: UserTweetsObjectType[]): string => {
   let tweetsString = "";
   let promptTweetsCount = 0;
   let targetTweetIndex = 0;
+  const longestTweetsArrayLength = mutualsTweets.reduce(
+    (acc, mutualTweetsObject) => {
+      const { tweets } = mutualTweetsObject;
+      return tweets.length > acc ? tweets.length : acc;
+    },
+    0
+  );
 
   // Loop through each object in mutualsTweets
   // On each iteration and a tweet to the string and increment promptTweetsCount
   // Break out of the loop when promptTweetsCount is equal to PROMPT_TWEETS_LIMIT
-  while (promptTweetsCount < PROMPT_TWEETS_LIMIT) {
+  while (
+    promptTweetsCount < PROMPT_TWEETS_LIMIT &&
+    targetTweetIndex < longestTweetsArrayLength - 1
+  ) {
     mutualsTweets.forEach((mutualTweetsObject) => {
       const { tweets, user } = mutualTweetsObject;
       const tweet = tweets[targetTweetIndex];
@@ -181,6 +191,10 @@ const getTweetsString = (mutualsTweets: UserTweetsObjectType[]): string => {
       }
     });
     targetTweetIndex++;
+  }
+
+  if (promptTweetsCount === 0) {
+    return "";
   }
 
   return tweetsString.trim();
@@ -270,10 +284,18 @@ const generateQuiz = async (
 
   try {
     const selectedTweetsString = getTweetsString(mutualsTweets);
+    if (!selectedTweetsString) {
+      error = "We Couldn't find enough tweets to use. Try different mutuals.";
+      return {
+        quiz: EMPTY_QUIZ,
+        error,
+      };
+    }
     const prompt = formatPrompt(selectedTweetsString);
     const quizMutuals = selectedMutuals.map(({ username }) => username);
 
     const quizString = await generateQuizString(prompt);
+
     const quiz: QuizType = {
       ...formatQuiz(quizString, username),
       quizMutuals,
@@ -312,6 +334,7 @@ const createQuiz = async (
     const mutualsTweets: UserTweetsObjectType[] = await Promise.all(
       selectedMutuals.map(getUserTweets)
     );
+
     const quizResponse = await generateQuiz(
       userHandle,
       mutualsTweets,
@@ -320,8 +343,10 @@ const createQuiz = async (
 
     res.status(200).json(quizResponse);
   } catch (error) {
+    console.error("Failed to create quiz");
+    console.error(error);
     res.status(500).json({
-      error: "Failed to get mutuals",
+      error: "Failed to create quiz",
       quiz: EMPTY_QUIZ,
     });
   }
