@@ -58,7 +58,9 @@ export const searchMutualsAsync = createAsyncThunk<
   if (!result.mutuals?.length) {
     return rejectWithValue({
       ...EMPTY_MUTUALS_SEARCH_RESPONSE,
-      error: !result.error ? result.error : EMPTY_MUTUALS_SEARCH_RESPONSE.error,
+      error: !!result.error
+        ? result.error
+        : EMPTY_MUTUALS_SEARCH_RESPONSE.error,
     });
   }
 

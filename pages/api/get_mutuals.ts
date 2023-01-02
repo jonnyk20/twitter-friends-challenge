@@ -17,7 +17,11 @@ const getMutuals = async (
   });
 
   if (!user) {
-    return [];
+    return res.status(404).json({
+      error: "User not found",
+      mutuals: [],
+      userProfileImageUrl: "",
+    });
   }
 
   const { id, profile_image_url = "" } = user.data;
@@ -45,12 +49,23 @@ const getMutuals = async (
 
     const formattedMutuals = mutuals.map(formatTwitterUser);
 
+    if (!formattedMutuals.length) {
+      return res.status(200).json({
+        error:
+          "No mutuals found. We only query the first 100 followers and 100 followed, and could not find mutuals within those",
+        mutuals: [],
+        userProfileImageUrl: profile_image_url,
+      });
+    }
+
     res.status(200).json({
       error: "",
       mutuals: formattedMutuals,
       userProfileImageUrl: profile_image_url,
     });
   } catch (error) {
+    console.error("Failed to get mutuals");
+    console.error(error);
     res.status(500).json({
       error: "Failed to get mutuals",
       mutuals: [],
