@@ -46,7 +46,7 @@ const TwitterShareButton: React.FC<TwitterShareButtonProps> = () => {
           prefix = ", and ";
         }
 
-        return `${prefix}@${mutual}`;
+        return `${prefix}${mutual}`;
       })
       .join("");
 

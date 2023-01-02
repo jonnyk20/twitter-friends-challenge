@@ -75,7 +75,7 @@ const LeaderboardScore: React.FC<LeaderboardScoreProps> = ({
                   display="inline"
                   component="span"
                 >
-                  {`@${mutual}`}
+                  {`${mutual}`}
                 </Typography>
               </ExternalLink>
               {i !== quizMutuals.length - 1 && (
