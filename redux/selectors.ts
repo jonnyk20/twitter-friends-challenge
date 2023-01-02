@@ -265,13 +265,7 @@ export const selectQuizInput = createSelector(
 
 // Leaderboard
 export const selectScoreRecords = (state: RootState): ScoreRecordType[] =>
-  sortByScore(getUniqueByUsername(state.quiz.scoreRecords)).concat([
-    ...cloneWithRandomIds(state.quiz.scoreRecords),
-    ...cloneWithRandomIds(state.quiz.scoreRecords),
-    ...cloneWithRandomIds(state.quiz.scoreRecords),
-    ...cloneWithRandomIds(state.quiz.scoreRecords),
-    ...cloneWithRandomIds(state.quiz.scoreRecords),
-  ]);
+  sortByScore(getUniqueByUsername(state.quiz.scoreRecords));
 
 export const selectScoreRecordInput = createSelector(
   selectUserHandle,
