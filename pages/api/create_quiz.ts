@@ -233,7 +233,10 @@ const formatQuestions = (rawQuestions: RawQuestionType[]): QuestionType[] => {
   return questions;
 };
 
-const formatQuiz = (completion: string, userHandle: string): QuizType => {
+const formatQuiz = (
+  completion: string,
+  userHandle: string
+): Omit<QuizType, "quizMutuals"> => {
   const quizString = (COMPLETION_PREFIX.trim() + completion.trim()).replaceAll(
     "`",
     ""
@@ -241,15 +244,11 @@ const formatQuiz = (completion: string, userHandle: string): QuizType => {
 
   try {
     const rawQuestions: RawQuestionType[] = parse(quizString).questions;
-    const quizMutuals = Array.from(
-      new Set(rawQuestions.map((rawQuestion) => rawQuestion.username))
-    ).filter((username) => username !== EXAMPLE_USERNAME);
     const questions = formatQuestions(rawQuestions);
 
     return {
       id: generateId(),
       questions,
-      quizMutuals,
       userHandle,
       userProfileImageUrl: "",
     };
@@ -263,7 +262,8 @@ const formatQuiz = (completion: string, userHandle: string): QuizType => {
 
 const generateQuiz = async (
   username: string,
-  mutualsTweets: UserTweetsObjectType[]
+  mutualsTweets: UserTweetsObjectType[],
+  selectedMutuals: TwitterUserType[]
 ): Promise<QuizResponseType> => {
   let quiz: QuizType = EMPTY_QUIZ;
   let error: string = "";
@@ -271,9 +271,13 @@ const generateQuiz = async (
   try {
     const selectedTweetsString = getTweetsString(mutualsTweets);
     const prompt = formatPrompt(selectedTweetsString);
+    const quizMutuals = selectedMutuals.map(({ username }) => username);
 
     const quizString = await generateQuizString(prompt);
-    const quiz = formatQuiz(quizString, username);
+    const quiz: QuizType = {
+      ...formatQuiz(quizString, username),
+      quizMutuals,
+    };
 
     if (quiz.id === EMPTY_QUIZ.id) {
       error = "Failed to generate quiz.";
@@ -308,7 +312,11 @@ const createQuiz = async (
     const mutualsTweets: UserTweetsObjectType[] = await Promise.all(
       selectedMutuals.map(getUserTweets)
     );
-    const quizResponse = await generateQuiz(userHandle, mutualsTweets);
+    const quizResponse = await generateQuiz(
+      userHandle,
+      mutualsTweets,
+      selectedMutuals
+    );
 
     res.status(200).json(quizResponse);
   } catch (error) {
