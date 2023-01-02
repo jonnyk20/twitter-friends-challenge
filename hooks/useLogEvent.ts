@@ -5,7 +5,11 @@ import {
   selectCurrentQuestion,
   selectCurrentQuestionIndex,
   selectIncorrectAnswersCount,
+  selectMutuals,
+  selectQuestions,
   selectQuizInput,
+  selectSelectedMutuals,
+  selectUserHandle,
 } from "../redux/selectors";
 import { useAppSelector } from "../redux/store";
 
@@ -16,6 +20,10 @@ const useLogQuizEvent = () => {
   const answersCount = useAppSelector(selectAnswerCount);
   const correctAnswersCount = useAppSelector(selectCorrectAnswersCount);
   const incorrectAnswersCount = useAppSelector(selectIncorrectAnswersCount);
+  const userName = useAppSelector(selectUserHandle);
+  const selectedMutuals = useAppSelector(selectSelectedMutuals);
+  const mutuals = useAppSelector(selectMutuals);
+  const questions = useAppSelector(selectQuestions);
 
   const logQuizEvent = (
     name: string,
@@ -27,10 +35,14 @@ const useLogQuizEvent = () => {
       ...params,
       currentQuestionIndex,
       quizCreationInput,
-      currentQuestion: JSON.stringify(currentQuestion),
+      currentQuestion,
       answersCount,
       correctAnswersCount,
       incorrectAnswersCount,
+      userName,
+      selectedMutuals,
+      mutuals,
+      questions,
     });
   };
 

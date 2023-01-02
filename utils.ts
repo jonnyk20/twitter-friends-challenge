@@ -11,8 +11,37 @@ import {
 export const wait = (amount = 0) =>
   new Promise((resolve) => setTimeout(resolve, amount));
 
-export const cleanObject = (originalObject: any): any =>
-  pickBy(originalObject, identity);
+export const stringifyValue = (value: any): string => {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return value.toString();
+  }
+};
+
+export const stringifyObject = (ob: any): { [key: string]: string } => {
+  let output: { [key: string]: string } = {};
+
+  for (const key in ob) {
+    const value = ob[key];
+
+    if (typeof value !== "undefined") {
+      output[key] = stringifyValue(value);
+    }
+  }
+
+  return output;
+};
+
+export const cleanObject = (originalObject: any): any => {
+  const objectWithDefinedValues = pickBy(originalObject, identity);
+
+  return stringifyObject(objectWithDefinedValues);
+};
 
 export const updateAnswers = (
   answers: AnswerType[],

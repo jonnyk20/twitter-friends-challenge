@@ -59,7 +59,7 @@ const TwitterShareButton: React.FC<TwitterShareButtonProps> = () => {
       url: "https://www.TwitterFriendsChallenge.com",
       text: text,
       // via: "Twitter",
-      // hashtags: "hashtag1,hashtag2",
+      hashtags: "TwitterFriendsChallenge",
     };
 
     for (var prop in params) {
