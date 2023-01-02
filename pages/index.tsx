@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Create Twitter Friends Challenge</title>
+        <title>Twitter Friends Challenge</title>
         <meta name="description" content="Twitter Friends Challenge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
