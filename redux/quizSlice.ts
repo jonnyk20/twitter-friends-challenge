@@ -245,7 +245,7 @@ export const quiz = createSlice({
         state.mutuals = action.payload.mutuals;
         state.userProfileImageUrl = action.payload.userProfileImageUrl;
 
-        logEvent("searchMutualsSucceeded");
+        logEvent("searchMutualsSucceeded", { ...addDataToEvent(state, {}) });
       })
       .addCase(createQuizAsync.pending, (state) => {
         logEvent("quizCreationStarted", {
