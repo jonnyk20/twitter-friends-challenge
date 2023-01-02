@@ -67,12 +67,13 @@ const timeWordsRegex = new RegExp(`\\b(${timeWords.join("|")})\\b`, "i");
 
 const PROMPT_INPUT_MARKER = "{INPUT}";
 const CODE_BLOCK_MARKER = "```";
-const EXAMPLE_QUESTION = "What could @jonnykalambay not wait to try";
+const EXAMPLE_USERNAME = "@jack";
+const EXAMPLE_QUESTION = `What could ${EXAMPLE_USERNAME} not wait to try`;
 
 const COMPLETION_PREFIX = `
 ${CODE_BLOCK_MARKER}
 questions:
-- username: "@jonnykalambay"
+- username: "${EXAMPLE_USERNAME}"
   question: "${EXAMPLE_QUESTION}"
   correctAnswer: "a gelato place" 
   incorrectAnswers:
@@ -99,7 +100,7 @@ ${CODE_BLOCK_MARKER}
 
 ## TWEETS
 ${PROMPT_INPUT_MARKER}
-- @jonnykalambay: Can't wait to try the new gelato place next door
+- ${EXAMPLE_USERNAME}: Can't wait to try the new gelato place next door
 
 ## QUESTIONS
 ${COMPLETION_PREFIX}
@@ -242,7 +243,7 @@ const formatQuiz = (completion: string, userHandle: string): QuizType => {
     const rawQuestions: RawQuestionType[] = parse(quizString).questions;
     const quizMutuals = Array.from(
       new Set(rawQuestions.map((rawQuestion) => rawQuestion.username))
-    );
+    ).filter((username) => username !== EXAMPLE_USERNAME);
     const questions = formatQuestions(rawQuestions);
 
     return {
