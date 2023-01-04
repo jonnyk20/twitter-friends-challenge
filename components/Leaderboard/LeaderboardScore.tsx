@@ -52,7 +52,14 @@ const LeaderboardScore: React.FC<LeaderboardScoreProps> = ({
       </Grid>
       <Grid item xs={5} sx={{ ...cellSx }}>
         <ExternalLink href={`https://twitter.com/${username}`}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: isMediumScreen ? "flex-start" : "center",
+              flexDirection: isMediumScreen ? "row" : "column",
+            }}
+          >
             <Avatar
               alt={`${username} profile image`}
               src={userProfileImageUrl}

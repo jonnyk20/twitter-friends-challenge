@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import * as R from "ramda";
 import { parse } from "yaml";
 import { TweetV2, TwitterApi } from "twitter-api-v2";
+import { TwitterApiRateLimitPlugin } from "@twitter-api-v2/plugin-rate-limit";
 import { shuffle } from "lodash";
 import { Configuration, OpenAIApi } from "openai";
 
@@ -15,13 +16,16 @@ import {
 } from "../../types";
 import { formatTextItem, generateId } from "../../utils";
 
+const rateLimitPlugin = new TwitterApiRateLimitPlugin();
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 const openai = new OpenAIApi(configuration);
 
-const client = new TwitterApi(process.env.TWITTER_API_KEY || "");
+const client = new TwitterApi(process.env.TWITTER_API_KEY || "", {
+  plugins: [rateLimitPlugin],
+});
 
 const personalPronouns = ["me", "I", "mine", "my", "myself"];
 
@@ -131,16 +135,32 @@ type UserTweetsObjectType = {
   user: TwitterUserType;
 };
 
+const TWEET_FETCH_LIMIT = 1000;
+
+const fetchTweets = async (
+  id: string,
+  count: number = TWEET_FETCH_LIMIT
+): Promise<TweetV2[]> => {
+  let followers: TweetV2[] = [];
+
+  const followersPaginator = await client.v2.userTimeline(id, {
+    max_results: 100,
+    exclude: ["replies", "retweets"],
+  });
+
+  await followersPaginator.fetchLast(count);
+
+  followers = followers.concat(followersPaginator.tweets);
+
+  return followers;
+};
+
 const getUserTweets = async (
   user: TwitterUserType
 ): Promise<UserTweetsObjectType> => {
   try {
     const { id } = user;
-    const tweetsResponse = await client.v2.userTimeline(id.toString(), {
-      max_results: 100,
-      exclude: ["replies", "retweets"],
-    });
-    const tweets = tweetsResponse.data.data;
+    const tweets = await fetchTweets(id.toString());
 
     const validTweets = tweets.filter(isValidTweet);
 
@@ -158,7 +178,7 @@ const getUserTweets = async (
   }
 };
 
-const PROMPT_TWEETS_LIMIT = 9;
+const PROMPT_TWEETS_LIMIT = 15;
 
 const getTweetsString = (mutualsTweets: UserTweetsObjectType[]): string => {
   let tweetsString = "";

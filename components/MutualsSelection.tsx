@@ -9,14 +9,16 @@ import {
   selectMutuals,
   selectQuizInput,
 } from "../redux/selectors";
-import SelectableTwitterUser from "./SelectableTwitterUser";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { createQuizAsync } from "../redux/thunkActions";
+import MutualsList from "./MutualsList";
 
 type MutualsSelectionProps = {};
 
 const MutualsSelection: React.FC<MutualsSelectionProps> = () => {
-  const sx: SxProps<Theme> = {};
+  const sx: SxProps<Theme> = {
+    position: "relative",
+  };
 
   const dispatch = useAppDispatch();
   const mutuals = useAppSelector(selectMutuals);
@@ -45,13 +47,7 @@ const MutualsSelection: React.FC<MutualsSelectionProps> = () => {
       >
         Create Quiz
       </Button>
-      {mutuals.map((user) => (
-        <SelectableTwitterUser
-          key={user.id}
-          user={user}
-          isSelected={selectedMutualIds.includes(user.id)}
-        />
-      ))}
+      <MutualsList mutuals={mutuals} />
     </Box>
   );
 };
