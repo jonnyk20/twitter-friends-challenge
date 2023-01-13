@@ -18,18 +18,6 @@ const AppInfo: React.FC<AppInfoProps> = () => {
       <Typography variant="h6" color="textPrimary">
         About
       </Typography>
-      <Typography align="center" sx={{ mb: 2 }} variant="body2">
-        This site was created because I had nothing else to do on New
-        Year&apos;s Eve.
-        <br />
-        We may soon see AI apps that can change the world. <br />
-        This is not one of such apps. It&nbsp;
-        <i>was</i> fun to work on, though.
-      </Typography>
-      <Typography variant="body2" display="inline" align="center">
-        Feel free to do with it as you wish. Clone it, change it, improve it,
-        watch it, turn it, leave it, stop, format it.
-      </Typography>
 
       <Typography
         display="inline"
